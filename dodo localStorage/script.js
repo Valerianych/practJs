@@ -2,13 +2,29 @@ const taskInput = document.getElementById("taskInput")
 const addTaskBtn = document.getElementById("addTaskBtn")
 const taskList = document.getElementById("taskList")
 
-const task = []
+let task = []
+const tasksString = localStorage.getItem("tasks")
+const tasksConst = JSON.parse(tasksString)
+console.log(tasksConst) 
 
-addTaskBtn.addEventListener("click", () =>{
-    let taskItem = taskInput.value
+if (tasksConst) {
+    task = tasksConst
+    task.forEach((taskItem) => {
+        renderTask(taskItem)
+    })
+}
+
+addTaskBtn.addEventListener("click", () => {
+    const taskItem = taskInput.value.trim()
+    if (taskItem === "") return
+
     task.push(taskItem)
-    console.log(task)
+    localStorage.setItem("tasks", JSON.stringify(task))
+    renderTask(taskItem)
+    taskInput.value = ""
+})
 
+function renderTask(taskItem) {
     const taskSpis = document.createElement("li")
     const btnDel = document.createElement("button")
 
@@ -18,17 +34,17 @@ addTaskBtn.addEventListener("click", () =>{
     taskList.appendChild(taskSpis)
     taskSpis.appendChild(btnDel)
 
-    btnDel.addEventListener("click", (event) =>{
+    btnDel.addEventListener("click", (event) => {
         event.stopPropagation()
         const index = task.indexOf(taskItem)
-        if(index !== -1){
+        if (index !== -1) {
             task.splice(index, 1)
-            
+            localStorage.setItem("tasks", JSON.stringify(task))
         }
         taskSpis.remove()
-        console.log(task)
-    } )
-    taskSpis.addEventListener("click", ()=>{
+    })
+
+    taskSpis.addEventListener("click", () => {
         taskSpis.classList.toggle("throughLine")
     })
-})
+}
